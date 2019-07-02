@@ -1,0 +1,568 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>pub_para_an1</title><meta name="generator" content="MATLAB 9.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-10"><meta name="DC.source" content="pub_para_an1.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">% FOr publication to save images etc</span>
+<span class="comment">% para_an1.m show the analysis of PARAFAC according to the parademo.m from nway toolbox</span>
+<span class="comment">% Comments are tentaviely and should be Scrutinized more extensively.</span>
+<span class="comment">% Data are preloaded. The macro parademo.m has been changed to suit our</span>
+<span class="comment">% case and with comments as far as this is possible.</span>
+<span class="comment">% Reslts of loadings corresponds to Ex (mode 3) and Em (mode 2) spectra</span>
+<span class="comment">% The scores corresponds to the concentrations of the different solutions.</span>
+<span class="comment">% Knut Kvaal, WESH, NMBU</span>
+<span class="comment">%</span>
+<span class="comment">%</span>
+<span class="comment">% REQUIRES THE DATA SETS !!!!!</span>
+<span class="comment">%</span>
+
+<span class="comment">% Copyright (C) 1995-2006  Rasmus Bro &amp; Claus Andersson</span>
+<span class="comment">% Copenhagen University, DK-1958 Frederiksberg, Denmark, rb@life.ku.dk</span>
+<span class="comment">%</span>
+<span class="comment">% This program is free software; you can redistribute it and/or modify it under</span>
+<span class="comment">% the terms of the GNU General Public License as published by the Free Software</span>
+<span class="comment">% Foundation; either version 2 of the License, or (at your option) any later version.</span>
+<span class="comment">%</span>
+<span class="comment">% This program is distributed in the hope that it will be useful, but WITHOUT</span>
+<span class="comment">% ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS</span>
+<span class="comment">% FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</span>
+<span class="comment">% You should have received a copy of the GNU General Public License along with</span>
+<span class="comment">% this program; if not, write to the Free Software Foundation, Inc., 51 Franklin</span>
+<span class="comment">% Street, Fifth Floor, Boston, MA  02110-1301, USA.</span>
+
+
+close <span class="string">all</span>
+clear <span class="string">all</span>
+echo <span class="string">off</span>
+
+echo <span class="string">on</span>
+
+<span class="comment">% Datasets an_ae_data2 are prepared as multivay data using PLS_Toolbox. The</span>
+<span class="comment">% dataset type data has been exported to nway data suited for the nway</span>
+<span class="comment">% toolbox.</span>
+<span class="comment">%</span>
+load <span class="string">an_ae_data2</span>;
+echo <span class="string">off</span>
+
+disp(<span class="string">' '</span>)
+disp(<span class="string">' Fluorescence measurements ideally follow the trilinear PARAFAC'</span>)
+disp(<span class="string">' model. We will use a simple data set of 5 mixtures of three'</span>)
+disp(<span class="string">' amino-acids (trp,phe &amp; tyr) to show how the pure spectra and'</span>)
+disp(<span class="string">' concentrations can be found with parafac'</span>)
+disp(<span class="string">' '</span>)
+disp(<span class="string">' First lets look at the raw data:'</span>)
+disp(<span class="string">' Press any key to continue'</span>)
+<span class="comment">%pause</span>
+
+<span class="comment">% Change this for new X</span>
+<span class="comment">%X=ae_raw;</span>
+X=an_raw;
+<span class="comment">% Emission and Exitation Axis values for this type of data.</span>
+EmAx = Em_txt_Ax;
+ExAx = Ex_txt_Ax;
+
+max_X=max(max(max(X)));
+echo <span class="string">on</span>
+figure(1);
+<span class="keyword">for</span> i=1:5,
+   subplot(3,2,i)
+   sample = squeeze(X(i,:,:));
+   mesh(ExAx,EmAx,sample);
+   title([<span class="string">'Raw data - sample '</span>,num2str(i)]);
+   xlabel(<span class="string">'Excitation [nm]'</span>)
+   ylabel(<span class="string">'Emission [nm]'</span>)
+   axis([ExAx(1) ExAx(end) EmAx(1) EmAx(end) 0 max_X]);
+   grid <span class="string">on</span>
+   drawnow
+<span class="keyword">end</span>;
+echo <span class="string">off</span>
+
+<span class="comment">% disp(' ')</span>
+<span class="comment">% disp(' Press any key to continue')</span>
+<span class="comment">% pause</span>
+<span class="comment">% close all</span>
+<span class="comment">% home</span>
+
+<span class="comment">% disp(' ')</span>
+<span class="comment">% disp(' The data will be slightly reduced to save computation time. This is done')</span>
+<span class="comment">% disp(' by reducing the 2. and 3. emission and excitation mode:')</span>
+<span class="comment">% disp(' ')</span>
+<span class="comment">%</span>
+<span class="comment">% echo on</span>
+<span class="comment">% X = X(:,1:5:end,1:2:end);</span>
+<span class="comment">% EmAx = Em_txt_Ax(1:5:end);</span>
+<span class="comment">% ExAx = Ex_txt_Ax(1:5:end);</span>
+<span class="comment">% size(X)</span>
+<span class="comment">% echo off</span>
+<span class="comment">%</span>
+<span class="comment">% disp(' ')</span>
+<span class="comment">% disp(' Press any key to continue')</span>
+<span class="comment">% pause</span>
+<span class="comment">% close all</span>
+<span class="comment">% home</span>
+
+
+disp(<span class="string">' '</span>)
+disp(<span class="string">' PARAFAC may be fitted to the data, but in order to investigate how'</span>)
+disp(<span class="string">' many components are needed we will use the tool pftest to get an'</span>)
+disp(<span class="string">' indication. We use 1 to 5 components because we assume that appr.'</span>)
+disp(<span class="string">' 3 are reasonable but want to check that. We fit models from 1 to 5 '</span>)
+disp(<span class="string">' components and fit each three times. This way we can check that the'</span>)
+disp(<span class="string">' is the same every time we fit, say a four-component model. If it is'</span>)
+disp(<span class="string">' it is an indication that we have used too many components or that the'</span>)
+disp(<span class="string">'  data are difficult to fit'</span>)
+disp(<span class="string">' '</span>)
+disp(<span class="string">' This process will take some time, but afterwards a plot is produced'</span>)
+disp(<span class="string">' which is often very instructive to look at'</span>)
+disp(<span class="string">' '</span>)
+disp(<span class="string">' '</span>)
+<span class="comment">% disp(' Press any key to continue')</span>
+<span class="comment">% disp(' ')</span>
+<span class="comment">% pause</span>
+<span class="comment">% close all</span>
+<span class="comment">% home</span>
+
+echo <span class="string">on</span>
+[ssX,Corco] = pftest(3,X,5,[0 0 0 0 NaN]);
+echo <span class="string">off</span>
+disp(<span class="string">' '</span>)
+disp(<span class="string">' Indeed, the fit values seem to indicate that two components are '</span>)
+disp(<span class="string">' suitable and the core consistency do not seem to point to a possible'</span>)
+disp(<span class="string">' third component. '</span>)
+
+
+disp(<span class="string">' '</span>)
+disp(<span class="string">' We will turn the plotting on, so that a graphical output is produced'</span>)
+disp(<span class="string">' '</span>)
+<span class="comment">% disp(' Press any key to continue')</span>
+<span class="comment">% pause</span>
+<span class="comment">% close all</span>
+<span class="comment">% home</span>
+
+echo <span class="string">on</span>
+<span class="comment">% 2 components for ae_raw</span>
+<span class="comment">% 2-3 components for an_raw</span>
+model = parafac(X,2,[0 0 2]);
+echo <span class="string">off</span>
+
+<span class="comment">% disp(' ')</span>
+<span class="comment">% disp(' Press any key to continue')</span>
+<span class="comment">% pause</span>
+<span class="comment">% close all</span>
+<span class="comment">% home</span>
+
+disp(<span class="string">' Using the function fac2let, we can get scores and loading out'</span>)
+disp(<span class="string">' '</span>)
+echo <span class="string">on</span>
+[A,B,C] = fac2let(model);
+echo <span class="string">off</span>
+disp(<span class="string">' '</span>)
+disp(<span class="string">' Scores'</span>)
+disp(A)
+disp(<span class="string">' '</span>)
+disp(<span class="string">' Concentrations'</span>)
+<span class="comment">%disp(y)</span>
+disp(<span class="string">' '</span>)
+<span class="comment">%disp(readme)</span>
+disp(<span class="string">' '</span>)
+
+disp(<span class="string">' Scrutinize the scores and compare to the concentrations to see'</span>)
+disp(<span class="string">' the relation between the two. Each score correspond to a specific'</span>)
+disp(<span class="string">' component up to scale and permutation'</span>)
+disp(<span class="string">' '</span>)
+disp(<span class="string">' END OF  PARADEMO'</span>)
+</pre><pre class="codeoutput">
+% Datasets an_ae_data2 are prepared as multivay data using PLS_Toolbox. The
+% dataset type data has been exported to nway data suited for the nway
+% toolbox.
+% 
+load an_ae_data2;
+echo off
+ 
+ Fluorescence measurements ideally follow the trilinear PARAFAC
+ model. We will use a simple data set of 5 mixtures of three
+ amino-acids (trp,phe &amp; tyr) to show how the pure spectra and
+ concentrations can be found with parafac
+ 
+ First lets look at the raw data:
+ Press any key to continue
+figure(1);
+for i=1:5,
+   subplot(3,2,i)
+   sample = squeeze(X(i,:,:));
+   mesh(ExAx,EmAx,sample);
+   title(['Raw data - sample ',num2str(i)]);
+   xlabel('Excitation [nm]')
+   ylabel('Emission [nm]')
+   axis([ExAx(1) ExAx(end) EmAx(1) EmAx(end) 0 max_X]);
+   grid on
+   drawnow
+end;
+   subplot(3,2,i)
+   sample = squeeze(X(i,:,:));
+   mesh(ExAx,EmAx,sample);
+   title(['Raw data - sample ',num2str(i)]);
+   xlabel('Excitation [nm]')
+   ylabel('Emission [nm]')
+   axis([ExAx(1) ExAx(end) EmAx(1) EmAx(end) 0 max_X]);
+   grid on
+   drawnow
+end;
+   subplot(3,2,i)
+   sample = squeeze(X(i,:,:));
+   mesh(ExAx,EmAx,sample);
+   title(['Raw data - sample ',num2str(i)]);
+   xlabel('Excitation [nm]')
+   ylabel('Emission [nm]')
+   axis([ExAx(1) ExAx(end) EmAx(1) EmAx(end) 0 max_X]);
+   grid on
+   drawnow
+end;
+   subplot(3,2,i)
+   sample = squeeze(X(i,:,:));
+   mesh(ExAx,EmAx,sample);
+   title(['Raw data - sample ',num2str(i)]);
+   xlabel('Excitation [nm]')
+   ylabel('Emission [nm]')
+   axis([ExAx(1) ExAx(end) EmAx(1) EmAx(end) 0 max_X]);
+   grid on
+   drawnow
+end;
+   subplot(3,2,i)
+   sample = squeeze(X(i,:,:));
+   mesh(ExAx,EmAx,sample);
+   title(['Raw data - sample ',num2str(i)]);
+   xlabel('Excitation [nm]')
+   ylabel('Emission [nm]')
+   axis([ExAx(1) ExAx(end) EmAx(1) EmAx(end) 0 max_X]);
+   grid on
+   drawnow
+end;
+echo off
+ 
+ PARAFAC may be fitted to the data, but in order to investigate how
+ many components are needed we will use the tool pftest to get an
+ indication. We use 1 to 5 components because we assume that appr.
+ 3 are reasonable but want to check that. We fit models from 1 to 5 
+ components and fit each three times. This way we can check that the
+ is the same every time we fit, say a four-component model. If it is
+ it is an indication that we have used too many components or that the
+  data are difficult to fit
+ 
+ This process will take some time, but afterwards a plot is produced
+ which is often very instructive to look at
+ 
+ 
+[ssX,Corco] = pftest(3,X,5,[0 0 0 0 NaN]);
+ LS shifted accel will be done every time after iter 5
+ LS shifted accel will be done every time after iter 5
+ LS shifted accel will be done every time after iter 5
+ LS shifted accel will be done every time after iter 5
+ LS shifted accel will be done every time after iter 5
+ LS shifted accel will be done every time after iter 5
+ LS shifted accel will be done every time after iter 5
+ LS shifted accel will be done every time after iter 5
+ LS shifted accel will be done every time after iter 5
+ LS shifted accel will be done every time after iter 5
+ LS shifted accel will be done every time after iter 5
+ LS shifted accel will be done every time after iter 5
+ LS shifted accel will be done every time after iter 5
+echo off 
+ 
+ Indeed, the fit values seem to indicate that two components are 
+ suitable and the core consistency do not seem to point to a possible
+ third component. 
+ 
+ We will turn the plotting on, so that a graphical output is produced
+ 
+% 2 components for ae_raw
+% 2-3 components for an_raw
+model = parafac(X,2,[0 0 2]);
+ 
+ PRELIMINARY
+ 
+ A 2-component model will be fitted
+ No constraints on mode 1
+ No constraints on mode 2
+ No constraints on mode 3
+ The convergence criterion is 1e-06
+ No weights given
+ No missing values
+ Line-search acceleration scheme initialized
+ Using direct trilinear decomposition for initialization
+ 
+ Sum-of-Squares   Iterations  Explained
+ of residuals                 variation
+ 
+   Tuckers congruence coefficient
+    1.0000    0.0027
+    0.0027    1.0000
+
+ 
+ 59249.8012757500       2        95.8813 
+ 
+ Components have been normalized in all but the first mode
+ Components have been ordered according to contribution
+ Components have been reflected according to convention
+ 
+ Normal probability plots are time-consuming
+ They are made in the statistics toolbox though, so we can't change that!
+ The algorithm converged
+echo off 
+ Using the function fac2let, we can get scores and loading out
+ 
+[A,B,C] = fac2let(model);
+echo off
+ 
+ Scores
+  408.4516  413.8348
+  424.8062  261.7331
+  431.1945  210.1760
+  425.4113  239.3803
+  390.5934  409.5804
+
+ 
+ Concentrations
+ 
+ 
+ Scrutinize the scores and compare to the concentrations to see
+ the relation between the two. Each score correspond to a specific
+ component up to scale and permutation
+ 
+ END OF  PARADEMO
+</pre><img vspace="5" hspace="5" src="pub_para_an1_01.png" alt=""> <img vspace="5" hspace="5" src="pub_para_an1_02.png" alt=""> <img vspace="5" hspace="5" src="pub_para_an1_03.png" alt=""> <img vspace="5" hspace="5" src="pub_para_an1_04.png" alt=""> <img vspace="5" hspace="5" src="pub_para_an1_05.png" alt=""> <img vspace="5" hspace="5" src="pub_para_an1_06.png" alt=""> <img vspace="5" hspace="5" src="pub_para_an1_07.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+
+% FOr publication to save images etc
+% para_an1.m show the analysis of PARAFAC according to the parademo.m from nway toolbox
+% Comments are tentaviely and should be Scrutinized more extensively. 
+% Data are preloaded. The macro parademo.m has been changed to suit our
+% case and with comments as far as this is possible. 
+% Reslts of loadings corresponds to Ex (mode 3) and Em (mode 2) spectra 
+% The scores corresponds to the concentrations of the different solutions.
+% Knut Kvaal, WESH, NMBU
+% 
+%
+% REQUIRES THE DATA SETS !!!!!
+%
+
+% Copyright (C) 1995-2006  Rasmus Bro & Claus Andersson
+% Copenhagen University, DK-1958 Frederiksberg, Denmark, rb@life.ku.dk
+%
+% This program is free software; you can redistribute it and/or modify it under 
+% the terms of the GNU General Public License as published by the Free Software 
+% Foundation; either version 2 of the License, or (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful, but WITHOUT 
+% ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+% FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+% You should have received a copy of the GNU General Public License along with 
+% this program; if not, write to the Free Software Foundation, Inc., 51 Franklin 
+% Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+
+close all
+clear all
+echo off
+
+echo on
+
+% Datasets an_ae_data2 are prepared as multivay data using PLS_Toolbox. The
+% dataset type data has been exported to nway data suited for the nway
+% toolbox.
+% 
+load an_ae_data2;
+echo off
+
+disp(' ')
+disp(' Fluorescence measurements ideally follow the trilinear PARAFAC')
+disp(' model. We will use a simple data set of 5 mixtures of three')
+disp(' amino-acids (trp,phe & tyr) to show how the pure spectra and')
+disp(' concentrations can be found with parafac')
+disp(' ')
+disp(' First lets look at the raw data:')
+disp(' Press any key to continue')
+%pause
+
+% Change this for new X
+%X=ae_raw;
+X=an_raw;
+% Emission and Exitation Axis values for this type of data.
+EmAx = Em_txt_Ax;
+ExAx = Ex_txt_Ax;
+
+max_X=max(max(max(X)));
+echo on
+figure(1);
+for i=1:5,
+   subplot(3,2,i)
+   sample = squeeze(X(i,:,:));
+   mesh(ExAx,EmAx,sample);
+   title(['Raw data - sample ',num2str(i)]);
+   xlabel('Excitation [nm]')
+   ylabel('Emission [nm]')
+   axis([ExAx(1) ExAx(end) EmAx(1) EmAx(end) 0 max_X]);
+   grid on
+   drawnow
+end;
+echo off
+
+% disp(' ')
+% disp(' Press any key to continue')
+% pause
+% close all
+% home
+
+% disp(' ')
+% disp(' The data will be slightly reduced to save computation time. This is done')
+% disp(' by reducing the 2. and 3. emission and excitation mode:')
+% disp(' ')
+% 
+% echo on
+% X = X(:,1:5:end,1:2:end);
+% EmAx = Em_txt_Ax(1:5:end);
+% ExAx = Ex_txt_Ax(1:5:end);
+% size(X)
+% echo off
+% 
+% disp(' ')
+% disp(' Press any key to continue')
+% pause
+% close all
+% home
+
+
+disp(' ')
+disp(' PARAFAC may be fitted to the data, but in order to investigate how')
+disp(' many components are needed we will use the tool pftest to get an')
+disp(' indication. We use 1 to 5 components because we assume that appr.')
+disp(' 3 are reasonable but want to check that. We fit models from 1 to 5 ')
+disp(' components and fit each three times. This way we can check that the')
+disp(' is the same every time we fit, say a four-component model. If it is')
+disp(' it is an indication that we have used too many components or that the')
+disp('  data are difficult to fit')
+disp(' ')
+disp(' This process will take some time, but afterwards a plot is produced')
+disp(' which is often very instructive to look at')
+disp(' ')
+disp(' ')
+% disp(' Press any key to continue')
+% disp(' ')
+% pause
+% close all
+% home
+
+echo on
+[ssX,Corco] = pftest(3,X,5,[0 0 0 0 NaN]);
+echo off 
+disp(' ')
+disp(' Indeed, the fit values seem to indicate that two components are ')
+disp(' suitable and the core consistency do not seem to point to a possible')
+disp(' third component. ')
+
+
+disp(' ')
+disp(' We will turn the plotting on, so that a graphical output is produced')
+disp(' ') 
+% disp(' Press any key to continue')
+% pause
+% close all
+% home
+
+echo on
+% 2 components for ae_raw
+% 2-3 components for an_raw
+model = parafac(X,2,[0 0 2]);
+echo off 
+
+% disp(' ') 
+% disp(' Press any key to continue')
+% pause
+% close all
+% home
+
+disp(' Using the function fac2let, we can get scores and loading out')
+disp(' ')
+echo on
+[A,B,C] = fac2let(model);
+echo off
+disp(' ')
+disp(' Scores')
+disp(A)
+disp(' ')
+disp(' Concentrations')
+%disp(y)
+disp(' ')
+%disp(readme)
+disp(' ')
+
+disp(' Scrutinize the scores and compare to the concentrations to see')
+disp(' the relation between the two. Each score correspond to a specific')
+disp(' component up to scale and permutation')
+disp(' ')
+disp(' END OF  PARADEMO')
+##### SOURCE END #####
+--></body></html>
